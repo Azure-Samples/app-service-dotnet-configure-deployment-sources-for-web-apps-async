@@ -7,7 +7,7 @@
 
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>894bf2c0-0d73-4014-9095-92305063a072</ProjectGuid>
+    <ProjectGuid>d20448bc-bddc-4e26-bdc1-e6cc66e97f6a</ProjectGuid>
     <RootNamespace>ManageWebAppSourceControlAsync</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
