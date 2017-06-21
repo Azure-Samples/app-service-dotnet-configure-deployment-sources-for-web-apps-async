@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using CoreFtp;
@@ -65,7 +65,7 @@ namespace ManageWebAppSourceControlAsync
 
                 Utilities.Log("Deploying helloworld.War to " + app1Name + " through FTP...");
 
-                Utilities.UploadFileToFtp(
+                Utilities.UploadFileToWebApp(
                     await app1.GetPublishingProfileAsync(),
                     Path.Combine(Utilities.ProjectPath, "Asset", "helloworld.war"));
 

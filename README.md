@@ -4,7 +4,7 @@ platforms: .Net
 author: hovsepm
 ---
 
-#Getting Started with App - Manage Web App Source Control Async - in .Net #
+# Getting Started with App - Manage Web App Source Control Async - in .Net #
 
           Azure App Service basic sample for managing web apps.
           Note: you need to have the Git command line available on your PATH. The sample makes a direct call to 'git'.
