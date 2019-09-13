@@ -2,11 +2,13 @@
 page_type: sample
 languages:
 - csharp
+- javascript
+- powershell
+- html
 products:
 - azure
-extensions:
-- services: App-Service
-- platforms: dotnet
+description: "Azure App Service basic sample for managing web apps."
+urlFragment: app-service-dotnet-configure-deployment-sources-for-web-apps-async
 ---
 
 # Getting started on configuring deployment sources for Web Apps in C# asynchronously #
