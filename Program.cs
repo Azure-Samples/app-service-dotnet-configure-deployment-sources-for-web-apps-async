@@ -9,12 +9,7 @@ using Azure.ResourceManager.CosmosDB.Models;
 using Azure.ResourceManager.KeyVault;
 using Azure.ResourceManager.KeyVault.Models;
 using Azure.ResourceManager.Resources;
-using CoreFtp;
-using Microsoft.Azure.Management.AppService.Fluent;
-using Microsoft.Azure.Management.Fluent;
-using Microsoft.Azure.Management.ResourceManager.Fluent;
-using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
-using Microsoft.Azure.Management.Samples.Common;
+using Azure.ResourceManager.Samples.Common;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -25,6 +20,8 @@ using Azure;
 using Azure.Identity;
 using Azure.ResourceManager.Resources.Models;
 using System.Drawing;
+using Azure.ResourceManager.AppService.Models;
+using System.Xml;
 
 namespace ManageWebAppSourceControlAsync
 {
@@ -85,8 +82,11 @@ namespace ManageWebAppSourceControlAsync
 
                 Utilities.Log("Deploying helloworld.War to " + app1Name + " through FTP...");
 
-                Utilities.UploadFileToWebApp(
-                    await webSite.Data.HostingEnvironmentProfile,
+                var publishingprofile = (await webSite.GetPublishingProfileXmlWithSecretsAsync(new CsmPublishingProfile()
+                {
+                    Format = PublishingProfileFormat.Ftp
+                })).Value;
+                Utilities.UploadFileToWebApp(publishingprofile,
                     Path.Combine(Utilities.ProjectPath, "Asset", "helloworld.war"));
 
                 Utilities.Log("Deployment helloworld.War to web app " + webSite.Data.Name + " completed");
@@ -95,7 +95,7 @@ namespace ManageWebAppSourceControlAsync
                 // warm up
                 Utilities.Log("Warming up " + app1Url + "/helloworld...");
                 Utilities.CheckAddress("http://" + app1Url + "/helloworld");
-                SdkContext.DelayProvider.Delay(5000);
+                Thread.Sleep(5000);
                 Utilities.Log("CURLing " + app1Url + "/helloworld...");
                 Utilities.Log(Utilities.CheckAddress("http://" + app1Url + "/helloworld"));
 
@@ -127,8 +127,17 @@ namespace ManageWebAppSourceControlAsync
 
                 Utilities.Log("Deploying a local Tomcat source to " + app2Name + " through Git...");
 
-                var profile = webSite2.Data.HostingEnvironmentProfile;
-                Utilities.DeployByGit(profile, "azure-samples-appservice-helloworld");
+                var reader = new StreamReader(publishingprofile);
+                var content = reader.ReadToEnd();
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.LoadXml(content);
+                XmlNodeList gitUrl = xmlDoc.GetElementsByTagName("publishUrl");
+                string gitUrlString = gitUrl[0].InnerText;
+                XmlNodeList userName = xmlDoc.GetElementsByTagName("userName");
+                string userNameString = userName[0].InnerText;
+                XmlNodeList password = xmlDoc.GetElementsByTagName("userPWD");
+                string passwordString = password[0].InnerText;
+                Utilities.DeployByGit(userNameString, passwordString, gitUrlString, "azure-samples-appservice-helloworld");
 
                 Utilities.Log("Deployment to web app " + webSite2.Data.Name + " completed");
                 Utilities.Print(webSite2);
@@ -136,7 +145,7 @@ namespace ManageWebAppSourceControlAsync
                 // warm up
                 Utilities.Log("Warming up " + app2Url + "/helloworld...");
                 Utilities.CheckAddress("http://" + app2Url + "/helloworld");
-                SdkContext.DelayProvider.Delay(5000);
+                Thread.Sleep(5000);
                 Utilities.Log("CURLing " + app2Url + "/helloworld...");
                 Utilities.Log(Utilities.CheckAddress("http://" + app2Url + "/helloworld"));
 
@@ -165,7 +174,7 @@ namespace ManageWebAppSourceControlAsync
                 // warm up
                 Utilities.Log("Warming up " + app3Url + "...");
                 Utilities.CheckAddress("http://" + app3Url);
-                SdkContext.DelayProvider.Delay(5000);
+                Thread.Sleep(5000);
                 Utilities.Log("CURLing " + app3Url + "...");
                 Utilities.Log(Utilities.CheckAddress("http://" + app3Url));
 
@@ -187,7 +196,7 @@ namespace ManageWebAppSourceControlAsync
                 // warm up
                 Utilities.Log("Warming up " + app4Url + "...");
                 Utilities.CheckAddress("http://" + app4Url);
-                SdkContext.DelayProvider.Delay(5000);
+                Thread.Sleep(5000);
                 Utilities.Log("CURLing " + app4Url + "...");
                 Utilities.Log(Utilities.CheckAddress("http://" + app4Url));
             }
