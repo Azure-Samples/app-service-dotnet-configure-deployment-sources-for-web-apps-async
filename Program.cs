@@ -152,6 +152,10 @@ namespace ManageWebAppSourceControlAsync
 
                 Utilities.Log("Creating another web app " + app3Name + "...");;
                 var webSite3Collection = resourceGroup.GetWebSites();
+                var webSite3Data = new WebSiteData(region)
+                {
+                    AppServicePlanId = plan
+                };
                 var publicRepodata = new SiteSourceControlData()
                 {
                     RepoUri = new Uri("https://github.com/Azure-Samples/app-service-web-dotnet-get-started"),
@@ -159,7 +163,7 @@ namespace ManageWebAppSourceControlAsync
                     //IsManualIntegration = true,
                     //IsMercurial = false,
                 };
-                var webSite3_lro = webSiteCollection.CreateOrUpdate(Azure.WaitUntil.Completed, app3Name, webSiteData);
+                var webSite3_lro = webSite3Collection.CreateOrUpdate(Azure.WaitUntil.Completed, app3Name, webSite3Data);
                 var webSite3 = webSite_lro.Value;
                 var container = webSite3.GetWebSiteSourceControl();
                 var sourceControl = (await container.CreateOrUpdateAsync(Azure.WaitUntil.Completed, publicRepodata)).Value;
