@@ -107,14 +107,14 @@ namespace ManageWebAppSourceControlAsync
                 var webSite2Collection = resourceGroup.GetWebSites();
                 var webSite2Data = new WebSiteData(region)
                 {
-                    SiteConfig = new Azure.ResourceManager.AppService.Models.SiteConfigProperties()
+                    SiteConfig = new SiteConfigProperties()
                     {
                         JavaContainerVersion = "1.8.0_60",
                         JavaContainer = "Tomcat 8.0.23",
                     },
                     AppServicePlanId = plan,
                 };
-                var webSite2_lro = webSiteCollection.CreateOrUpdate(Azure.WaitUntil.Completed, app1Name, webSiteData);
+                var webSite2_lro = webSiteCollection.CreateOrUpdate(Azure.WaitUntil.Completed, app1Name, webSite2Data);
                 var webSite2 = webSite_lro.Value;
 
                 Utilities.Log("Created web app " + webSite2.Data.Name);
@@ -152,19 +152,17 @@ namespace ManageWebAppSourceControlAsync
 
                 Utilities.Log("Creating another web app " + app3Name + "...");;
                 var webSite3Collection = resourceGroup.GetWebSites();
-                var webSite3Data = new WebSiteData(region)
+                var publicRepodata = new SiteSourceControlData()
                 {
-                    SiteConfig = new Azure.ResourceManager.AppService.Models.SiteConfigProperties()
-                    {
-                        WindowsFxVersion = "PricingTier.StandardS1",
-                        NetFrameworkVersion = "NetFrameworkVersion.V4_6",
-                        JavaContainerVersion = "1.8.0_60",
-                        JavaContainer = "Tomcat 8.0.23",
-                    },
-                    AppServicePlanId = plan,
+                    RepoUri = new Uri("https://github.com/Azure-Samples/app-service-web-dotnet-get-started"),
+                    Branch = "master",
+                    //IsManualIntegration = true,
+                    //IsMercurial = false,
                 };
-                var webSite3_lro = webSiteCollection.CreateOrUpdate(Azure.WaitUntil.Completed, app1Name, webSiteData);
+                var webSite3_lro = webSiteCollection.CreateOrUpdate(Azure.WaitUntil.Completed, app3Name, webSiteData);
                 var webSite3 = webSite_lro.Value;
+                var container = webSite3.GetWebSiteSourceControl();
+                var sourceControl = (await container.CreateOrUpdateAsync(Azure.WaitUntil.Completed, publicRepodata)).Value;
 
                 Utilities.Log("Created web app " + webSite3.Data.Name);
                 Utilities.Print(webSite3);
@@ -185,7 +183,7 @@ namespace ManageWebAppSourceControlAsync
                 {
                     AppServicePlanId = plan,
                 };
-                var webSite4_lro = webSiteCollection.CreateOrUpdate(Azure.WaitUntil.Completed, app1Name, webSiteData);
+                var webSite4_lro = webSiteCollection.CreateOrUpdate(Azure.WaitUntil.Completed, app1Name, webSite4Data);
                 var webSite4 = webSite_lro.Value;
 
                 Utilities.Log("Created web app " + webSite4.Data.Name);
